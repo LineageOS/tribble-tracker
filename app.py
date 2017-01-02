@@ -3,10 +3,12 @@ from database import Statistic
 from datetime import datetime, timedelta
 from flask import Flask, jsonify, render_template, request
 from flask_mongoengine import MongoEngine
+from flask_cache import Cache
 
 app = Flask(__name__)
 app.config.from_pyfile('app.cfg')
 db = MongoEngine(app)
+cache = Cache(app, config={'CACHE_TYPE', 'simpile'})
 
 @app.route('/api/v1/stats', methods=['POST'])
 def submit_stats():
@@ -19,6 +21,7 @@ def submit_stats():
     print("Saved")
     return "neat"
 
+@cache.cached(timeout=3600)
 @app.route('/api/v1/popular/<string:field>/<int:days>')
 @app.route('/api/v1/popular/<int:days>')
 def get_devices(field='model', days=90):
@@ -26,7 +29,7 @@ def get_devices(field='model', days=90):
         'result': Statistic.get_most_popular(field, days)
         })
 
-
+@cache.cached(timeout=3600)
 @app.route('/')
 def index():
     total = Statistic.get_count(90)
