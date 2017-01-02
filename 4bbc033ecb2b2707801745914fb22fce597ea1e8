@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa3479d7_f20ba829",
+        "filename": "database.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 11604
+      },
+      "writtenOn": "2017-01-02T12:22:18Z",
+      "side": 1,
+      "message": "i should rename this",
+      "range": {
+        "startLine": 41,
+        "startChar": 6,
+        "endLine": 41,
+        "endChar": 33
+      },
+      "revId": "4bbc033ecb2b2707801745914fb22fce597ea1e8",
+      "serverId": "1ec6b3db-b2c1-4fa4-84a2-4c7efe89ba71",
+      "unresolved": false
+    }
+  ]
+}
