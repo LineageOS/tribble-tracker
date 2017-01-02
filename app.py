@@ -1,4 +1,6 @@
-from database import Statistic
+import click
+
+from database import Statistic, PoorlyNamedEmbeddedDocument, FieldAggregates
 
 from datetime import datetime, timedelta
 from flask import Flask, jsonify, render_template, request
@@ -9,6 +11,20 @@ app = Flask(__name__)
 app.config.from_pyfile('app.cfg')
 db = MongoEngine(app)
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
+@app.cli.command()
+@click.argument('date')
+def aggregate(date):
+    start = datetime(*map(int, date.split('-')))
+    end = start + timedelta(days=1)
+    print(start,end)
+    for field in Statistic.field_map.values():
+        if field in ['d', 't']: continue # skip device_id, submit_time
+        res = Statistic.objects().aggregate({ '$match': { 't': { '$gte': start, '$lte': end } } },
+                {'$group': { '_id': '$' + field, 'total': { '$sum': 1 }}})
+        res2 = list(map(lambda a: PoorlyNamedEmbeddedDocument(v=a['_id'], c=a['total']), res))
+        doc = FieldAggregates(d=start, f=field, v=res2)
+        doc.save()
 
 @app.route('/api/v1/stats', methods=['POST'])
 def submit_stats():

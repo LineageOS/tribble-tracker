@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
-from mongoengine import Document
-from mongoengine import StringField, DateTimeField
+from mongoengine import Document, EmbeddedDocument
+from mongoengine import StringField, DateTimeField, EmbeddedDocumentField, ListField, IntField
 
 class Statistic(Document):
     d = StringField(required=True)          #device_id
@@ -36,4 +36,27 @@ class Statistic(Document):
         'carrier': 'c',
         'carrier_id': 'c_id',
         'submit_time': 't'
+    }
+
+class PoorlyNamedEmbeddedDocument(EmbeddedDocument): # working title
+    v = StringField(required=True) # value
+    c = IntField(required=True) # count
+
+    def __str__(self):
+        return str(self.v) + " " + str(self.c)
+
+    field_map = {
+        'value': 'v',
+        'count': 'c'
+    }
+
+class FieldAggregates(Document):
+    d = DateTimeField(required=True)    # date
+    f = StringField(required=True)      # field_name
+    v = ListField(EmbeddedDocumentField(PoorlyNamedEmbeddedDocument, required=True)) # values
+
+    field_map = {
+        'date': 'd',
+        'field_name': 'f',
+        'values': 'v'
     }
