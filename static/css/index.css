@@ -7,10 +7,6 @@ body {
 	font-size: 1.5em;
 }
 
-#content {
-	padding: 10px;
-}
-
 .aside {
 	display: inline-block;
 	text-align: center;
@@ -24,9 +20,7 @@ body {
 }
 
 .leaderboard {
-	position: relative;
-	width: 100%;
-	display: inline-block;
+	padding: 10px;
 }
 
 .leaderboard-header {

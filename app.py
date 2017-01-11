@@ -37,7 +37,8 @@ def index():
     total = Statistic.get_count(90)
     return render_template('index.html', total=total, len=len,
             devices=Statistic.get_most_popular('model', 90),
-            countries=Statistic.get_most_popular('country', 90))
+            countries=Statistic.get_most_popular('country', 90),
+            carriers=Statistic.get_most_popular('carrier', 90))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000, debug=True)
