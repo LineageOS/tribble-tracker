@@ -1,3 +1,5 @@
+import json
+
 from database import Statistic
 
 from datetime import datetime, timedelta
@@ -9,6 +11,16 @@ app = Flask(__name__)
 app.config.from_pyfile('app.cfg')
 db = MongoEngine(app)
 cache = Cache(app)
+
+with open("countries.json") as f:
+    country_map = json.load(f)
+
+def display_thing(thing, column):
+    val = thing['_id']
+    if column == 'country':
+        if val in country_map:
+            return country_map[val]
+    return val
 
 @app.route('/api/v1/stats', methods=['POST'])
 def submit_stats():
@@ -35,7 +47,7 @@ def get_devices(field='model', days=90):
 @cache.cached(timeout=3600)
 def index():
     stats = { "model": Statistic.get_most_popular('model', 90), "country": Statistic.get_most_popular("country", 90), "total": Statistic.get_count(90)}
-    return render_template('index.html', stats=stats, columns=["model", "country"])
+    return render_template('index.html', stats=stats, columns=["model", "country"], display=display_thing)
 
 @app.route('/api/v1/<string:field>/<string:value>')
 @cache.cached(timeout=3600)
@@ -56,7 +68,7 @@ def stats_by_field(field, value):
         abort(404)
 
     stats = Statistic.get_info_by_field(field, value)
-    return render_template("index.html", stats=stats, columns=valuemap[field], value=value)
+    return render_template("index.html", stats=stats, columns=valuemap[field], value=value, display=display_thing)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000, debug=True)
